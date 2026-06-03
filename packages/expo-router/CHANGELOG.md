@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Migrate the `Drawer` navigator to the `standard-navigation` integration. ([@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
