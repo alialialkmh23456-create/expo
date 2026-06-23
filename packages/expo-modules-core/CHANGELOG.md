@@ -19,6 +19,7 @@
 - [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
 - [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
+- [iOS] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47262](https://github.com/expo/expo/pull/47262) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
