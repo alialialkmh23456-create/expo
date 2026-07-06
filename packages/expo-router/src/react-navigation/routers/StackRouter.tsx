@@ -1,9 +1,7 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
-import { getNextRouteKeyFromState, getRouteKey } from './getRouteKey';
+import { getNextRouteKeyFromState, getRouteKey, getStateKey } from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -164,20 +162,22 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, pathname, routeParamList }) {
+    getInitialState({ routeNames, parentRouteKey, routeParamList }) {
       const initialRouteName =
         options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
           ? options.initialRouteName
           : routeNames[0]!;
 
+      const key = getStateKey(parentRouteKey);
+
       return {
         stale: false,
-        key: `stack-${nanoid()}`,
+        key,
         index: 0,
         routeNames,
         routes: [
           {
-            key: getRouteKey(pathname, initialRouteName),
+            key: getRouteKey({ stateKey: key, name: initialRouteName }),
             name: initialRouteName,
             params: routeParamList[initialRouteName],
           },
@@ -185,21 +185,24 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getRehydratedState(partialState, { routeNames, pathname, routeParamList }) {
+    getRehydratedState(partialState, { routeNames, parentRouteKey, routeParamList }) {
       const state = partialState;
 
       if (state.stale === false) {
         return state;
       }
 
+      const key = getStateKey(parentRouteKey);
+
       const routes = state.routes
         .filter((route) => routeNames.includes(route.name))
         .reduce<Route<string>[]>((built, route) => {
-          const key =
-            route.key || getNextRouteKeyFromState(pathname, route.name, { routes: built });
+          const routeKey =
+            route.key ||
+            getNextRouteKeyFromState({ stateKey: key, name: route.name, state: { routes: built } });
           built.push({
             ...route,
-            key,
+            key: routeKey,
             params:
               routeParamList[route.name] !== undefined
                 ? {
@@ -216,7 +219,7 @@ export function StackRouter(options: StackRouterOptions) {
           options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
 
         routes.push({
-          key: getRouteKey(pathname, initialRouteName),
+          key: getRouteKey({ stateKey: key, name: initialRouteName }),
           name: initialRouteName,
           params: routeParamList[initialRouteName],
         });
@@ -224,14 +227,14 @@ export function StackRouter(options: StackRouterOptions) {
 
       return {
         stale: false,
-        key: `stack-${nanoid()}`,
+        key,
         index: routes.length - 1,
         routeNames,
         routes,
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, pathname, routeParamList, routeKeyChanges }) {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
       const keep = (route: Route<string>) =>
         routeNames.includes(route.name) && !routeKeyChanges.includes(route.name);
 
@@ -245,7 +248,7 @@ export function StackRouter(options: StackRouterOptions) {
             : routeNames[0]!;
 
         activeRoutes.push({
-          key: getRouteKey(pathname, initialRouteName),
+          key: getRouteKey({ stateKey: state.key, name: initialRouteName }),
           name: initialRouteName,
           params: routeParamList[initialRouteName],
         });
@@ -275,7 +278,7 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForAction(state, action, options) {
-      const { routeParamList, pathname } = options;
+      const { routeParamList } = options;
 
       switch (action.type) {
         case 'REPLACE': {
@@ -303,7 +306,7 @@ export function StackRouter(options: StackRouterOptions) {
           );
 
           if (!route) {
-            route = createRouteFromAction({ action, routeParamList }, pathname, state);
+            route = createRouteFromAction({ action, routeParamList }, state);
           }
 
           return {
@@ -412,7 +415,11 @@ export function StackRouter(options: StackRouterOptions) {
             routes = [
               ...activeRoutes,
               {
-                key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+                key: getNextRouteKeyFromState({
+                  stateKey: state.key,
+                  name: action.payload.name,
+                  state,
+                }),
                 name: action.payload.name,
                 path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                 params,
@@ -467,7 +474,7 @@ export function StackRouter(options: StackRouterOptions) {
           if (index === -1) {
             const routes = [
               ...activeRoutes,
-              createRouteFromAction({ action, routeParamList }, pathname, state),
+              createRouteFromAction({ action, routeParamList }, state),
             ];
             return {
               ...state,
@@ -583,7 +590,7 @@ export function StackRouter(options: StackRouterOptions) {
             );
 
             if (!route) {
-              route = createRouteFromAction({ action, routeParamList }, pathname, state);
+              route = createRouteFromAction({ action, routeParamList }, state);
             }
 
             const routes = activeRoutes.slice(0, currentIndex).concat(route);
@@ -678,7 +685,7 @@ export function StackRouter(options: StackRouterOptions) {
                 .filter(
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
-                .concat(createRouteFromAction({ action, routeParamList }, pathname, state)),
+                .concat(createRouteFromAction({ action, routeParamList }, state)),
             ],
           };
         }
