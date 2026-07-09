@@ -2,7 +2,26 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import type { HashSource } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
+import { getNodeModulesPackageJsonPath, pathExistsAsync, toPosixPath } from '../utils/Path';
+
+/**
+ * Build a hash source for an autolinked native module - its `package.json` name+version for the
+ * `package` source type, otherwise its whole native directory.
+ */
+export async function createAutolinkingHashSourceAsync(
+  projectRoot: string,
+  dirRelativePath: string,
+  reasons: string[],
+  nativeModuleSourceType: 'files' | 'package'
+): Promise<HashSource> {
+  if (nativeModuleSourceType === 'package') {
+    const packageJsonPath = getNodeModulesPackageJsonPath(dirRelativePath);
+    if (packageJsonPath && (await pathExistsAsync(path.join(projectRoot, packageJsonPath)))) {
+      return { type: 'package', filePath: packageJsonPath, reasons };
+    }
+  }
+  return { type: 'dir', filePath: dirRelativePath, reasons };
+}
 
 export async function getFileBasedHashSourceAsync(
   projectRoot: string,
