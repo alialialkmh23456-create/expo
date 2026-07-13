@@ -17,6 +17,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix cache pollution in production by inlined environment variable values with a vary-cache approach ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 - Avoid writing a 500 response when a DevTools plugin server request has already started or aborted. ([#47192](https://github.com/expo/expo/pull/47192) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Pass a fetch API `Request` to DevTools plugin WebSocket handlers instead of `IncomingMessage`. ([#47410](https://github.com/expo/expo/pull/47410) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Use `loadModule` for MCP and DevTools plugin server module loading. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
@@ -39,6 +40,7 @@
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [Internal] Unify the sync realpath helper and make fallback handling explicit. ([#47175](https://github.com/expo/expo/pull/47175) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Bump to `dnssd-advertise@^1.1.6` ([#47183](https://github.com/expo/expo/pull/47183) by [@kitten](https://github.com/kitten))
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 
