@@ -30,9 +30,11 @@
 - Include external CSS imports in the production server manifest ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 - Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
 - Surface the real `xcodebuild` error on `run:ios` failure instead of printing "0 error(s)" when the build formatter parsed none. ([#47748](https://github.com/expo/expo/pull/47748) by [@ramonclaudio](https://github.com/ramonclaudio))
+- In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
+- [Internal] Remove the unreachable port fallbacks and increase consistency in port selection logic ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
 - Bump to `@expo/ws-tunnel@^2.0.0` ([#46696](https://github.com/expo/expo/pull/46696) by [@kitten](https://github.com/kitten))
